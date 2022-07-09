@@ -1,0 +1,51 @@
+server:
+  port: 8081
+  tomcat:
+    relaxedPathChars: '<,>,[,\,],^,`,{,|,}'
+    relaxedQueryChars: '<,>,[,\,],^,`,{,|,}'
+
+
+spring:
+  sql:
+    init:
+      schema-locations: classpath:db/schema.sql
+      mode: always
+  application:
+    name: bookstore-login
+#  # 配置数据库连接池
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/bookstore
+#    username: root
+#    password: renboyu010214
+  # 配置上传文件信息
+  servlet:
+    multipart:
+      max-file-size: 100MB
+  datasource:
+    driver-class-name: org.h2.Driver
+    # data: classpath:db/data-h2.sql  # 每次启动程序，都会运行以对数据库的数据操作
+    # url: jdbc:h2:mem:test #配置h2数据库的连接地址
+    url: jdbc:h2:file:./MyDB #配置h2数据库的连接地址
+    username: root
+    password: renboyu010214
+  h2:
+    console:
+      path: /h2-admin #进入h2 web操作界面的路径
+      enabled: true #开启web console功能
+      settings:
+        web-allow-others: true
+
+
+
+mybatis:
+  # 配置实体类别名 包路径
+  type-aliases-package: cn.ywrby.domain
+  # 配置映射文件路径
+  mapper-locations: classpath:mapper/*.xml
+  # 配置日志文件
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+Electron:
+  path: I:\vue3-admin-electron\vue3-admin-electron.exe
