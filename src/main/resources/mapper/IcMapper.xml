@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--映射文件DTD约束头-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--mybatis图集管理映射文件-->
+<mapper namespace="cn.ywrby.mapper.IcMapper">
+
+    <insert id="addIc" keyProperty="id" useGeneratedKeys="true" parameterType="ImgCol">
+        insert into ic_info (ic_name,ic_path,ic_desc) values (#{ic_name},#{ic_path},#{ic_desc})
+    </insert>
+</mapper>

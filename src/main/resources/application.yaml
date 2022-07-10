@@ -8,24 +8,22 @@ server:
 spring:
   sql:
     init:
-      schema-locations: classpath:db/schema.sql
-      mode: always
+      schema-locations: classpath:db/schema.sql  # 配置初始化sql语句
+      mode: always  # 不设置mode模式不一定每次都稳定执行
   application:
-    name: bookstore-login
-#  # 配置数据库连接池
+    name: JiLe
+#  # 配置数据库连接池 （原mysql配置文件）
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/bookstore
 #    username: root
-#    password: renboyu010214
+#    password:
   # 配置上传文件信息
   servlet:
     multipart:
       max-file-size: 100MB
   datasource:
     driver-class-name: org.h2.Driver
-    # data: classpath:db/data-h2.sql  # 每次启动程序，都会运行以对数据库的数据操作
-    # url: jdbc:h2:mem:test #配置h2数据库的连接地址
     url: jdbc:h2:file:./MyDB #配置h2数据库的连接地址
     username: root
     password: renboyu010214
@@ -48,4 +46,4 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 Electron:
-  path: I:\vue3-admin-electron\vue3-admin-electron.exe
+  path: I:\vue3-admin-electron\vue3-admin-electron.exe # 目标前端程序启动

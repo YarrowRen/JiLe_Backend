@@ -15,16 +15,6 @@ public interface UserService {
      */
     public User verify(User user);
 
-    /**
-     * 根据校园码获取学生基本信息
-     * @param username
-     * @return
-     */
-    public User findUserByUsername(String username);
-
-
-
-    boolean insertUser(User user,String courseNum);
 
 
 }
