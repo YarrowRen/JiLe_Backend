@@ -6,10 +6,9 @@ import cn.ywrby.res.ResultResponse;
 import cn.ywrby.service.IcService;
 import cn.ywrby.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/ic")
@@ -31,6 +30,16 @@ public class IcController {
             res.setCode(Constants.STATUS_FAIL);
             res.setMessage("图集创建失败！");
         }
+        return res;
+    }
+
+    @GetMapping("/getIc")
+    public ResultResponse getIc(){
+        ResultResponse res=new ResultResponse();
+        List<ImgCol> icList = icService.getIc();
+        res.setMessage("获取成功");
+        res.setData(icList);
+        res.setCode(Constants.STATUS_OK);
         return res;
     }
 }

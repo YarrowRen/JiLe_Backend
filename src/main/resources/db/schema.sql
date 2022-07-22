@@ -1,9 +1,4 @@
-CREATE TABLE IF NOT EXISTS accounts
-(
-    account  varchar(30) NOT NULL,
-    name     varchar(30) NULL,
-    epochSec bigint(20)  NULL
-);
+
 CREATE TABLE IF NOT EXISTS IC_INFO
 (
     ID      INTEGER      NOT NULL AUTO_INCREMENT,

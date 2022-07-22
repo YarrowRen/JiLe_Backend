@@ -8,4 +8,8 @@
     <insert id="addIc" keyProperty="id" useGeneratedKeys="true" parameterType="ImgCol">
         insert into ic_info (ic_name,ic_path,ic_desc) values (#{ic_name},#{ic_path},#{ic_desc})
     </insert>
+
+    <select id="getIc" resultType="ImgCol">
+        select * from ic_info
+    </select>
 </mapper>

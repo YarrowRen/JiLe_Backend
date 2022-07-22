@@ -17,17 +17,4 @@ public class UserServiceImpl implements UserService {
 
 
 
-    @Override
-    public User verify(User user) {
-        String username=user.getUsername();
-        String pwd= user.getPassword();
-        user = userMapper.findUserByUserAndPwd(username, pwd);
-        if(user!=null){
-            return user;
-        }else {
-            return null;
-        }
-    }
-
-
 }

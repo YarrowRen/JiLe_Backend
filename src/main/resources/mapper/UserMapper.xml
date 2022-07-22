@@ -5,59 +5,5 @@
 <!--mybatis用户映射文件-->
 <mapper namespace="cn.ywrby.mapper.UserMapper">
 
-    <select id="findUserByUserAndPwd" resultType="User">
-        select * from user_info where schNum= #{username} and pwd = #{pwd} limit 1
-    </select>
-
-    <select id="findUserByUsername" resultType="User">
-        select * from user_info where schNum= #{username} limit 1
-    </select>
-
-    <select id="findUserById" resultType="User">
-        select * from user_info where id= #{id} limit 1
-    </select>
-
-    <select id="getUserPermission" resultType="java.lang.Integer">
-        SELECT p.permissionId FROM permission_info p WHERE p.userId=#{userId}
-    </select>
-
-
-
-    <update id="updateUserInfo">
-        update user_info set name=#{name},pwd=#{password} where schNum=#{username}
-    </update>
-
-
-    <insert id="insertUserRead">
-        insert into user_read values (#{userId},#{bookId})
-    </insert>
-
-    <insert id="insertUserAnswer">
-        insert into user_answer values (#{userId},#{bookId})
-    </insert>
-
-
-    <insert id="insertUser"  keyProperty="id" useGeneratedKeys="true" parameterType="User">
-        insert into user_info (schNum,name,sex,pwd) values
-            (#{username},#{name},#{sex},#{password})
-    </insert>
-
-    <insert id="insertUserPermission" >
-        insert into permission_info (userId,permissionId) values (#{userId},#{permissionId})
-    </insert>
-
-    <select id="getCourseId" resultType="java.lang.Integer">
-        SELECT ci.id FROM course_info ci WHERE ci.courseNum=#{courseNum}
-    </select>
-
-    <select id="showData" resultType="Account" >
-        SELECT * FROM accounts
-    </select>
-
-    <insert id="insertData">
-        insert into accounts (account,name,epochSec) values (#{account},#{name},#{epochSec})
-    </insert>
-
-
 
 </mapper>

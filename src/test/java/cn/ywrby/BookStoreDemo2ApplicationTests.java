@@ -16,12 +16,10 @@ class BookStoreDemo2ApplicationTests {
 
     @Test
     public void testShowDataH2(){
-        userMapper.showData();
     }
 
     @Test
     public void testInsertH2(){
-        userMapper.insertData("123455","张三",9999);
     }
 
 }
