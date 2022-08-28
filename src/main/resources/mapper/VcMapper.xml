@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--映射文件DTD约束头-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--mybatis图集管理映射文件-->
+<mapper namespace="cn.ywrby.mapper.VcMapper">
+
+    <insert id="addVc" keyProperty="id" useGeneratedKeys="true" parameterType="VideoCol">
+        insert into vc_info (vc_name,vc_path,vc_desc) values (#{vc_name},#{vc_path},#{vc_desc})
+    </insert>
+    <select id="getVc" resultType="VideoCol">
+        select * from vc_info
+    </select>
+    <select id="getFirstVC" resultType="VideoCol">
+        select * from vc_info LIMIT 0,1;
+    </select>
+</mapper>
