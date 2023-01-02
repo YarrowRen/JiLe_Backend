@@ -131,6 +131,19 @@ public class VideoUtils {
         return files;
     }
 
+    // split截取后缀名
+    public static String lastName(File file){
+        if (file == null) return null;
+        String filename = file.getName();
+        // split用的是正则，所以需要用 //. 来做分隔符
+        String[] split = filename.split("\\.");
+        //注意判断截取后的数组长度，数组最后一个元素是后缀名
+        if (split.length > 1) {
+            return split[split.length - 1];
+        } else {
+            return "";
+        }
+    }
 
 
 }

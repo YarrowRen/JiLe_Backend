@@ -8,31 +8,32 @@ server:
 spring:
   sql:
     init:
-      schema-locations: classpath:db/schema.sql  # 配置初始化sql语句
+#      schema-locations: classpath:db/schema.sql  # 配置初始化sql语句
       mode: always  # 不设置mode模式不一定每次都稳定执行
   application:
     name: JiLe
-#  # 配置数据库连接池 （原mysql配置文件）
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/bookstore
-#    username: root
-#    password:
+  # 配置数据库连接池 （原mysql配置文件）
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/JiLe
+    username: root
+    password: renboyu010214
   # 配置上传文件信息
   servlet:
     multipart:
       max-file-size: 100MB
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./MyDB #配置h2数据库的连接地址
-    username: root
-    password: renboyu010214
-  h2:
-    console:
-      path: /h2-admin #进入h2 web操作界面的路径
-      enabled: true #开启web console功能
-      settings:
-        web-allow-others: true
+  # H2数据库配置
+#  datasource:
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:file:./MyDB #配置h2数据库的连接地址
+#    username: root
+#    password: renboyu010214
+#  h2:
+#    console:
+#      path: /h2-admin #进入h2 web操作界面的路径
+#      enabled: true #开启web console功能
+#      settings:
+#        web-allow-others: true
 
 
 

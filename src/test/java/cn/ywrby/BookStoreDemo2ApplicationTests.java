@@ -3,6 +3,7 @@ package cn.ywrby;
 
 import cn.ywrby.domain.VideoInfo;
 import cn.ywrby.mapper.UserMapper;
+import cn.ywrby.mapper.VcMapper;
 import cn.ywrby.utils.VideoUtils;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,9 @@ class BookStoreDemo2ApplicationTests {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    VcMapper vcMapper;
 
 
 
@@ -60,6 +64,23 @@ class BookStoreDemo2ApplicationTests {
 
 //        VideoInfo videoInfo = utils.randomGrabberFFmpegImage(file,outPath);
 //        System.out.println(videoInfo.getCoverPath());
+    }
+
+
+
+    @Test
+    public void testPath(){
+
+        List<String> videoNameList=new ArrayList<>();
+        videoNameList.add("test1");
+        videoNameList.add("test2");
+        videoNameList.add("test3");
+        videoNameList.add("test4");
+        videoNameList.add("test4");
+        System.out.println(videoNameList.toString());
+        videoNameList.remove("test");
+        System.out.println(videoNameList.toString());
+
     }
 
 }

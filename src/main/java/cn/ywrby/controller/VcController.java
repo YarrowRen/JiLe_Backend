@@ -48,7 +48,7 @@ public class VcController {
     public ResultResponse getVideoCover(@RequestBody VideoCol videoCol){
         System.out.println(videoCol);
         ResultResponse res=new ResultResponse();
-        String savePath="I:\\JiLeFile\\video\\cover";
+        String savePath=Constants.COVER_SAVE_PATH;
         List<VideoInfo> videoCover = vcService.getVideoCover(videoCol,savePath);
         res.setMessage("获取视频封面成功！");
         res.setData(videoCover);
@@ -56,6 +56,7 @@ public class VcController {
 
         return res;
     }
+
 
     /**
      * 仅作测试用，用来获取第一个VideoCollection
@@ -72,4 +73,17 @@ public class VcController {
 
     }
 
+
+    @GetMapping("/refreshVcData")
+    public ResultResponse refreshVcData(@RequestParam Integer vcID){
+        ResultResponse res=new ResultResponse();
+
+        boolean result=vcService.refreshVcData(vcID);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }
+
+        return res;
+    }
 }

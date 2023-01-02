@@ -14,4 +14,28 @@
     <select id="getFirstVC" resultType="VideoCol">
         select * from vc_info LIMIT 0,1;
     </select>
+    <select id="getFirstVCVideoInfo" resultType="Video">
+        select * from video_info where vc_id=#{id}
+    </select>
+
+    <select id="getVideoTag" resultType="Tag">
+        SELECT ti.id,ti.tag_name FROM video_tag vt,tag_info ti WHERE vt.tag_id=ti.id AND vt.video_id=#{videoId}
+    </select>
+
+    <select id="getVcPathByID" resultType="String">
+        SELECT vi.VC_PATH FROM vc_info vi WHERE vi.ID=#{vcID}
+    </select>
+
+    <select id="getVcByID" resultType="Video">
+        SELECT * FROM video_info vi WHERE vi.vc_id=#{vcID}
+    </select>
+
+    <delete id="deleteVideo">
+        <!--这里可以只删除一个video_info表而不需要处理video_tag关联表是因为已经设置了级联删除-->
+        DELETE FROM video_info vi WHERE vi.videoID=#{videoID};
+    </delete>
+
+    <insert id="addVideo" keyProperty="videoID" useGeneratedKeys="true" parameterType="Video">
+        insert into video_info (vc_id,videoName,videoPath,videoCover,videoScore) values (#{vc_id},#{videoName},#{videoPath},#{videoCover},#{videoScore})
+    </insert>
 </mapper>
