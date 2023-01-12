@@ -1,6 +1,7 @@
 package cn.ywrby.controller;
 
 import cn.ywrby.domain.ImgCol;
+import cn.ywrby.domain.Video;
 import cn.ywrby.domain.VideoCol;
 import cn.ywrby.domain.VideoInfo;
 import cn.ywrby.res.ResultResponse;
@@ -84,6 +85,65 @@ public class VcController {
             res.setMessage(Constants.MESSAGE_OK);
         }
 
+        return res;
+    }
+
+    @PostMapping("/videoRename")
+    public ResultResponse videoRename(@RequestParam String newName,@RequestParam int videoID){
+        ResultResponse res=new ResultResponse();
+        Video video = vcService.videoRename(newName, videoID);
+        if(video==null){
+            //返回值为空，说明重命名过程中出现错误
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"修改失败，文件名未变化或存在同名文件，请检查后重新命名。");
+        }else {
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+            res.setData(video);
+        }
+        return res;
+    }
+
+    @PostMapping("/videoDelete")
+    public ResultResponse videoDelete(@RequestParam int videoID){
+        ResultResponse res=new ResultResponse();
+        boolean result=vcService.videoDelete(videoID);
+        if (result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"删除失败，请刷新数据库后重试。");
+        }
+        return res;
+    }
+
+    @PostMapping("/editVideoCover")
+    public ResultResponse editVideoCover(@RequestParam int videoID,@RequestParam String coverPath){
+        ResultResponse res=new ResultResponse();
+        vcService.editVideoCover(videoID,coverPath);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        return res;
+    }
+
+    @PostMapping("/autoGetCover")
+    public ResultResponse autoGetCover(@RequestParam int videoID){
+        ResultResponse res=new ResultResponse();
+        Video video=vcService.autoGetCover(videoID);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        res.setData(video);
+        return res;
+    }
+
+    @GetMapping("/getVideoDetails")
+    public ResultResponse getVideoDetails(@RequestParam int videoID){
+        ResultResponse res=new ResultResponse();
+        Video video=vcService.getVideoDetails(videoID);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        res.setData(video);
         return res;
     }
 }

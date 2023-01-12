@@ -18,4 +18,14 @@ public interface VcService {
     List<Tag> getVideoTag(int videoId);
 
     boolean refreshVcData(int vcID);
+
+    Video videoRename(String newName,int videoID);
+
+    boolean videoDelete(int videoID);
+
+    void editVideoCover(int videoID, String coverPath);
+
+    Video autoGetCover(int videoID);
+
+    Video getVideoDetails(int videoID);
 }

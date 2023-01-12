@@ -1,9 +1,6 @@
 package cn.ywrby.mapper;
 
-import cn.ywrby.domain.ImgCol;
-import cn.ywrby.domain.Tag;
-import cn.ywrby.domain.Video;
-import cn.ywrby.domain.VideoCol;
+import cn.ywrby.domain.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -26,4 +23,12 @@ public interface VcMapper {
     void deleteVideo(int videoID);
 
     int addVideo(Video video);
+
+    Video getVideo(int videoID);
+
+    void videoRename(String newName, int videoID);
+
+    void updateVideoCover(int videoID, String coverPath);
+
+    List<Person> getVideoPersonList(int videoID);
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +82,22 @@ class BookStoreDemo2ApplicationTests {
         videoNameList.remove("test");
         System.out.println(videoNameList.toString());
 
+    }
+
+    @Test
+    public void testRename() throws IOException {
+        // 旧的文件或目录
+        File oldName = new File("I:\\JiLeFile\\video\\【猫饼】最后雅致2-1080P.mp4");
+        // 新的文件或目录
+        File newName = new File("I:\\JiLeFile\\video\\【猫饼】最后雅致-1080P.mp4");
+        if (newName.exists()) {  //  确保新的文件名不存在
+            throw new java.io.IOException("file exists");
+        }
+        if(oldName.renameTo(newName)) {
+            System.out.println("已重命名");
+        } else {
+            System.out.println("Error");
+        }
     }
 
 }

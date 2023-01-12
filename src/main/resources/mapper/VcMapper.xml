@@ -36,6 +36,22 @@
     </delete>
 
     <insert id="addVideo" keyProperty="videoID" useGeneratedKeys="true" parameterType="Video">
-        insert into video_info (vc_id,videoName,videoPath,videoCover,videoScore) values (#{vc_id},#{videoName},#{videoPath},#{videoCover},#{videoScore})
+        insert into video_info (vc_id,videoName,videoCover) values (#{vc_id},#{videoName},#{videoCover})
     </insert>
+
+    <select id="getVideo" resultType="Video">
+        SELECT * FROM video_info vi WHERE vi.videoID=#{videoID} LIMIT 1
+    </select>
+    
+    <update id="videoRename" >
+        UPDATE video_info vi SET vi.videoName=#{newName} WHERE vi.videoID=#{videoID}
+    </update>
+
+    <update id="updateVideoCover">
+        UPDATE video_info vi SET vi.videoCover=#{coverPath} WHERE vi.videoID=#{videoID}
+    </update>
+
+    <select id="getVideoPersonList" resultType="Person">
+        SELECT pi.*,ri.id roleID,ri.roleName role FROM person_role pr,role_info ri,person_info pi WHERE ri.id=pr.roleID AND pi.id=pr.personID AND pr.videoID=#{videoID}
+    </select>
 </mapper>

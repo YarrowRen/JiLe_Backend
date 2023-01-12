@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Date;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,9 +17,13 @@ public class Video {
     private int vc_id;
     private int videoID;
     private String videoName;
-    private String videoPath;
+//    private String videoPath;
     private String videoCover;
     private int videoScore;
-
+    private String intro;
+    private int followed;
+    private Date releaseDate;
+    private List<Tag> tags;
+    private List<Person> personList;
 
 }

@@ -1,17 +1,16 @@
 package cn.ywrby.service.impl;
 
-import cn.ywrby.domain.Tag;
-import cn.ywrby.domain.Video;
-import cn.ywrby.domain.VideoCol;
-import cn.ywrby.domain.VideoInfo;
+import cn.ywrby.domain.*;
 import cn.ywrby.mapper.VcMapper;
 import cn.ywrby.service.VcService;
 import cn.ywrby.utils.Constants;
+import cn.ywrby.utils.FileUtils;
 import cn.ywrby.utils.VideoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,13 +127,80 @@ public class VcServiceImpl implements VcService {
             Video video=new Video();
             video.setVc_id(vcID);
             video.setVideoName(videoNameList.get(i));
-            video.setVideoPath(vcPath+"\\"+videoNameList.get(i));
+//            video.setVideoPath(vcPath+"\\"+videoNameList.get(i));
             VideoInfo info = getSpecifiedVideoCover(video, Constants.COVER_SAVE_PATH);
             video.setVideoCover(info.getCoverPath());
             vcMapper.addVideo(video);
         }
 
         return true;
+    }
+
+    @Override
+    public Video videoRename(String newName, int videoID) {
+        //修改视频文件名主要分为两部分，首先要修改文件在系统中本身名称另一个就是修改数据库中保存的文件名
+        //修改视频文件系统名称
+        Video video=vcMapper.getVideo(videoID);
+        String vcPath = vcMapper.getVcPathByID(video.getVc_id());
+        String newNamePath=vcPath+"\\"+newName;
+        String oldNamePath=vcPath+"\\"+video.getVideoName();
+        //前后文件名一致的情况下直接返回错误
+        if(oldNamePath.equals(newNamePath)){
+            return null;
+        }
+        //修改真实文件名
+        boolean result = FileUtils.fileRename(oldNamePath, newNamePath);
+        //修改成功后修改数据库
+        if(result){
+            vcMapper.videoRename(newName,videoID);
+            //返回修改后的视频文件对象
+            return vcMapper.getVideo(videoID);
+        }else {
+            //修改失败说明存在与新名 同名的文件 返回错误
+            return null;
+        }
+    }
+
+    @Override
+    public boolean videoDelete(int videoID) {
+        Video video=vcMapper.getVideo(videoID);
+        String vc_path=vcMapper.getVcPathByID(video.getVc_id());
+        String filePath=vc_path+"\\"+video.getVideoName();
+
+        File file=new File(filePath);
+        //删除系统中视频文件
+        file.delete();
+        //删除数据库中视频文件
+        vcMapper.deleteVideo(videoID);
+        return true;
+    }
+
+    @Override
+    public void editVideoCover(int videoID, String coverPath) {
+        vcMapper.updateVideoCover(videoID,coverPath);
+    }
+
+    @Override
+    public Video autoGetCover(int videoID) {
+        Video video = vcMapper.getVideo(videoID);
+
+        //获取视频封面并修改数据库
+        VideoInfo videoInfo = getSpecifiedVideoCover(video, Constants.COVER_SAVE_PATH);
+        String coverPath = videoInfo.getCoverPath();
+        vcMapper.updateVideoCover(videoID,coverPath);
+        //重新获取视频信息
+        video=vcMapper.getVideo(videoID);
+        return video;
+    }
+
+    @Override
+    public Video getVideoDetails(int videoID) {
+        Video video=vcMapper.getVideo(videoID);
+        List<Tag> videoTag = vcMapper.getVideoTag(videoID);
+        video.setTags(videoTag);
+        List<Person> personList=vcMapper.getVideoPersonList(videoID);
+        video.setPersonList(personList);
+        return video;
     }
 
 }
