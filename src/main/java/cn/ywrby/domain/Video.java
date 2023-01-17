@@ -17,13 +17,13 @@ public class Video {
     private int vc_id;
     private int videoID;
     private String videoName;
-//    private String videoPath;
+    private String videoPath;
     private String videoCover;
     private int videoScore;
     private String intro;
     private int followed;
     private Date releaseDate;
+    private String url;
     private List<Tag> tags;
     private List<Person> personList;
-
 }

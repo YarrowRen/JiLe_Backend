@@ -54,4 +54,45 @@
     <select id="getVideoPersonList" resultType="Person">
         SELECT pi.*,ri.id roleID,ri.roleName role FROM person_role pr,role_info ri,person_info pi WHERE ri.id=pr.roleID AND pi.id=pr.personID AND pr.videoID=#{videoID}
     </select>
+
+    <update id="updateVideoInfo">
+        UPDATE video_info vi SET vi.videoCover=#{videoCover},vi.videoScore=#{videoScore},vi.followed=#{followed},vi.intro=#{intro},vi.releaseDate=#{releaseDate},vi.url=#{url} WHERE vi.videoID=#{videoID}
+    </update>
+
+    <!--使用子查询 如果存在指定人物就返回personID否则返回0-->
+    <select id="havePerson" resultType="java.lang.Integer">
+        select ifnull((select id from person_info where name=#{personName}),0);
+    </select>
+
+    <select id="haveTag" resultType="java.lang.Integer">
+        select ifnull((select id from tag_info where tag_name=#{tag_name}),0);
+    </select>
+
+    <insert id="addPerson" keyProperty="id" useGeneratedKeys="true" parameterType="Person">
+        INSERT INTO person_info (name) VALUES (#{name})
+    </insert>
+
+    <insert id="addTag" keyProperty="id" useGeneratedKeys="true" parameterType="Tag">
+        INSERT INTO tag_info (tag_name) VALUES (#{tag_name})
+    </insert>
+
+    <delete id="deletePersonRoleByVideoID" >
+        DELETE FROM person_role pr WHERE pr.videoID=#{videoID}
+    </delete>
+
+    <delete id="deleteVideoTagByVideoID">
+        DELETE FROM video_tag vt WHERE vt.video_id=#{videoID}
+    </delete>
+
+    <insert id="addPersonRole">
+        INSERT INTO person_role (videoID,personID,roleID) VALUES (#{videoID},#{personID},#{roleID})
+    </insert>
+
+    <insert id="addVideoTag">
+        INSERT INTO video_tag (video_id,tag_id) VALUES (#{videoID},#{tagID})
+    </insert>
+
+    <update id="changeFollowedState">
+        UPDATE video_info vi SET vi.followed=ABS(vi.followed-1) WHERE vi.videoID=#{videoID}
+    </update>
 </mapper>

@@ -28,4 +28,10 @@ public interface VcService {
     Video autoGetCover(int videoID);
 
     Video getVideoDetails(int videoID);
+
+    boolean updateVideoDetails(Video video);
+
+    void changeFollowedState(int videoID);
+
+    VideoInfo getVideoMediaInfo(int videoID);
 }

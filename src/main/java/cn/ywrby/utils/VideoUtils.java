@@ -8,6 +8,7 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,8 @@ public class VideoUtils {
             videoInfo.setVideoCode(grabber.getVideoCodecName());
 
             videoInfo.setAudioCode(grabber.getAudioCodecName());
-            // String md5 = MD5Util.getMD5ByInputStream(new FileInputStream(file));
+//            String md5=MD5Util.getMD5(file);
+//            videoInfo.setMd5(md5);
 
             videoInfo.setSampleRate(grabber.getSampleRate());
             return videoInfo;

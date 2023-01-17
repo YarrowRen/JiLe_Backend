@@ -1,6 +1,7 @@
 package cn.ywrby;
 
 
+import cn.ywrby.domain.Person;
 import cn.ywrby.domain.VideoInfo;
 import cn.ywrby.mapper.UserMapper;
 import cn.ywrby.mapper.VcMapper;
@@ -98,6 +99,14 @@ class BookStoreDemo2ApplicationTests {
         } else {
             System.out.println("Error");
         }
+    }
+
+    @Test
+    public void testHavePerson(){
+        Person person=new Person();
+        person.setName("D1");
+        int i = vcMapper.addPerson(person);
+        System.out.println("成功："+person.getId());
     }
 
 }

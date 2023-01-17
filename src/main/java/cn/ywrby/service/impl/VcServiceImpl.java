@@ -196,11 +196,81 @@ public class VcServiceImpl implements VcService {
     @Override
     public Video getVideoDetails(int videoID) {
         Video video=vcMapper.getVideo(videoID);
+        String vcPath = vcMapper.getVcPathByID(video.getVc_id());
+        video.setVideoPath(vcPath+"\\"+video.getVideoName());
         List<Tag> videoTag = vcMapper.getVideoTag(videoID);
         video.setTags(videoTag);
         List<Person> personList=vcMapper.getVideoPersonList(videoID);
         video.setPersonList(personList);
         return video;
+    }
+
+    @Override
+    public boolean updateVideoDetails(Video video) {
+        //逐个修改表单内容
+        //先处理位于video_info表内的所有信息
+        vcMapper.updateVideoInfo(video);
+        //再处理角色信息内容
+        //首先清空对应视频的人物关系表
+        vcMapper.deletePersonRoleByVideoID(video.getVideoID());
+        List<Person> personList=video.getPersonList();
+        for (int i=0;i<personList.size();i++){
+            Person person=personList.get(i);
+            //首先要判断角色信息是否存在还是用户新增的角色
+            int result = vcMapper.havePerson(person.getName());
+            if(result==0){
+                //如果返回值等于0说明数据库中不存在指定人物，需要先创建人物再添加人物与视频关联
+                vcMapper.addPerson(person);
+            }else {
+                //如果返回值不等于0说明数据库中已经存在指定人物并且返回值就是人物ID 不需要进行其他处理
+                person.setId(result);
+            }
+            //处理person_role
+            vcMapper.addPersonRole(video.getVideoID(),person.getId(),person.getRoleID());
+        }
+
+        //最后处理视频tag信息
+        //首先清空视频所有关联tag
+        vcMapper.deleteVideoTagByVideoID(video.getVideoID());
+        List<Tag> tagList=video.getTags();
+        //然后判断tag是否已经创建
+        for (int i=0;i<tagList.size();i++){
+            Tag tag=tagList.get(i);
+            int result = vcMapper.haveTag(tag.getTag_name());
+            if(result==0){
+                //tag不存在 首先创建tag
+                vcMapper.addTag(tag);
+            }else {
+                //tag存在 结果值就是tagID
+                tag.setId(result);
+            }
+            //处理video_tag
+            System.out.println(video.getVideoID()+" : "+tag.getId());
+            vcMapper.addVideoTag(video.getVideoID(),tag.getId());
+        }
+
+        return true;
+    }
+
+    @Override
+    public void changeFollowedState(int videoID) {
+        vcMapper.changeFollowedState(videoID);
+    }
+
+    @Override
+    public VideoInfo getVideoMediaInfo(int videoID) {
+
+        Video video = vcMapper.getVideo(videoID);
+        String vcPath = vcMapper.getVcPathByID(video.getVc_id());
+        String videoPath=vcPath+"\\"+video.getVideoName();
+
+        VideoUtils utils=new VideoUtils();
+
+        File file=new File(videoPath);
+
+        VideoInfo videoInfo = utils.getVideoInfo(file);
+
+        return videoInfo;
     }
 
 }

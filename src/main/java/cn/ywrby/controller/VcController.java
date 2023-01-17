@@ -146,4 +146,40 @@ public class VcController {
         res.setData(video);
         return res;
     }
+
+    @PostMapping("/updateVideoDetails")
+    public ResultResponse updateVideoDetails(@RequestBody Video video){
+        ResultResponse res=new ResultResponse();
+        boolean result=vcService.updateVideoDetails(video);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"修改失败，请检查后重新提交。");
+        }
+
+        return res;
+    }
+
+    @PostMapping("/changeFollowedState")
+    public ResultResponse changeFollowedState(@RequestParam int videoID){
+        ResultResponse res=new ResultResponse();
+        vcService.changeFollowedState(videoID);
+
+        res.setCode(Constants.STATUS_OK);
+        res.setData(videoID);
+        return res;
+    }
+
+    @GetMapping("/getVideoMediaInfo")
+    public ResultResponse getVideoMediaInfo(@RequestParam int videoID){
+        ResultResponse res=new ResultResponse();
+        VideoInfo info= vcService.getVideoMediaInfo(videoID);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        res.setData(info);
+
+        return res;
+    }
 }
