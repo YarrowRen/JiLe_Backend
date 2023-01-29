@@ -12,4 +12,28 @@
     <select id="getIc" resultType="ImgCol">
         select * from ic_info
     </select>
+
+    <select id="getIcPathByID" resultType="String">
+        SELECT ii.ic_path FROM ic_info ii WHERE ii.ID=#{icID}
+    </select>
+
+    <select id="getIcByID" resultType="Image">
+        SELECT * FROM image_info ii WHERE ii.ic_id=#{icID}
+    </select>
+
+    <delete id="deleteImage">
+        DELETE FROM image_info ii WHERE ii.imageID=#{imageID};
+    </delete>
+
+    <insert id="addImage"  keyProperty="imageID" useGeneratedKeys="true" parameterType="Image">
+        insert into image_info (ic_id,imageName,thumbnail) values (#{ic_id},#{imageName},#{thumbnail})
+    </insert>
+
+    <select id="getImgCol" resultType="ImgCol">
+        select * from ic_info WHERE ID=#{ic_id}
+    </select>
+
+    <select id="getICImageInfo" resultType="Image">
+        select * from image_info where ic_id=#{ic_id}
+    </select>
 </mapper>

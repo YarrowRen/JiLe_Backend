@@ -54,4 +54,8 @@ public interface VcMapper {
     void addVideoTag(int videoID, int tagID);
 
     void changeFollowedState(int videoID);
+
+    List<Video> getVCVideoInfo(int id);
+
+    VideoCol getVideoCol(Integer vc_id);
 }

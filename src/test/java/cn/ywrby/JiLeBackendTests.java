@@ -1,11 +1,16 @@
 package cn.ywrby;
 
 
+import cn.ywrby.controller.FTPController;
 import cn.ywrby.domain.Person;
 import cn.ywrby.domain.VideoInfo;
 import cn.ywrby.mapper.UserMapper;
 import cn.ywrby.mapper.VcMapper;
+import cn.ywrby.utils.FtpUtils;
+import cn.ywrby.utils.ImageUtils;
 import cn.ywrby.utils.VideoUtils;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-class BookStoreDemo2ApplicationTests {
+class JiLeBackendTests {
 
 
     @Autowired
@@ -25,6 +30,7 @@ class BookStoreDemo2ApplicationTests {
 
     @Autowired
     VcMapper vcMapper;
+
 
 
 
@@ -109,4 +115,23 @@ class BookStoreDemo2ApplicationTests {
         System.out.println("成功："+person.getId());
     }
 
+    @Test
+    public void ftpTest(){
+        try {
+            FTPClient ftpClient = FtpUtils.getFTPClient();
+            FTPFile[] ftpFiles = ftpClient.listFiles();
+            for (int i=0;i<ftpFiles.length;i++){
+                FTPFile ftpFile = ftpFiles[i];
+                String name = ftpFile.getName();
+                System.out.println("结果："+name);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void imgTest(){
+        ImageUtils.PIC_Compression("I:\\JiLeFile\\test1\\01.jpg","I:\\JiLeFile\\thumbnail",1);
+    }
 }

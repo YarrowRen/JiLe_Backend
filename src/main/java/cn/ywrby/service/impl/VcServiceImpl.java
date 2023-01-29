@@ -6,6 +6,9 @@ import cn.ywrby.service.VcService;
 import cn.ywrby.utils.Constants;
 import cn.ywrby.utils.FileUtils;
 import cn.ywrby.utils.VideoUtils;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.page.PageMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -271,6 +274,28 @@ public class VcServiceImpl implements VcService {
         VideoInfo videoInfo = utils.getVideoInfo(file);
 
         return videoInfo;
+    }
+
+    @Override
+    public VideoCol getVcByID(Integer vc_id, Integer page, Integer pageSize) {
+
+
+        //获取视频合集基本信息
+        VideoCol vc=vcMapper.getVideoCol(vc_id);
+
+
+        //获取分页插件对象
+        PageHelper pageHelper=new PageHelper();
+        //开始分页，指定分页参数
+        PageMethod.startPage(page,pageSize);
+
+        List<Video> videoInfo = vcMapper.getVCVideoInfo(vc_id);
+
+        //获取分页信息
+        PageInfo<Video> info=new PageInfo<Video>(videoInfo);
+        //存入分页信息
+        vc.setVc_info(info);
+        return vc;
     }
 
 }

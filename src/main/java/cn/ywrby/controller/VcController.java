@@ -7,6 +7,7 @@ import cn.ywrby.domain.VideoInfo;
 import cn.ywrby.res.ResultResponse;
 import cn.ywrby.service.VcService;
 import cn.ywrby.utils.Constants;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,18 +61,39 @@ public class VcController {
 
 
     /**
-     * 仅作测试用，用来获取第一个VideoCollection
+     * 仅作测试用，用来获取第一个VideoCollection的视频信息
      * @return
      */
     @GetMapping("/getFirstVC")
     public ResultResponse getFirstVC(){
         ResultResponse res=new ResultResponse();
+
         VideoCol firstVC = vcService.getFirstVC();
         res.setCode(Constants.STATUS_OK);
         res.setMessage("成功获取影视集");
         res.setData(firstVC);
         return res;
 
+    }
+
+    /**
+     * 获取指定vc_id的视频合集的视频信息并分页
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/getVideoCol")
+    public ResultResponse getVideoCol(@RequestParam(required=true, defaultValue = "0")Integer vc_id,@RequestParam(required=true, defaultValue = "1")Integer page, @RequestParam(required=false,defaultValue="12")Integer pageSize){
+        ResultResponse res=new ResultResponse();
+
+        VideoCol vc = vcService.getVcByID(vc_id,page,pageSize);
+
+
+        res.setData(vc);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+
+        return res;
     }
 
 

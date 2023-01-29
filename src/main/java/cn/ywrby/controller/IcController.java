@@ -2,6 +2,7 @@ package cn.ywrby.controller;
 
 import cn.ywrby.domain.ImgCol;
 import cn.ywrby.domain.User;
+import cn.ywrby.domain.VideoCol;
 import cn.ywrby.res.ResultResponse;
 import cn.ywrby.service.IcService;
 import cn.ywrby.utils.Constants;
@@ -40,6 +41,33 @@ public class IcController {
         res.setMessage("获取成功");
         res.setData(icList);
         res.setCode(Constants.STATUS_OK);
+        return res;
+    }
+
+    @GetMapping("/refreshIcData")
+    public ResultResponse refreshIcData(@RequestParam Integer icID){
+        ResultResponse res=new ResultResponse();
+
+        boolean result=icService.refreshIcData(icID);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }
+
+        return res;
+    }
+
+    @GetMapping("/getImgCol")
+    public ResultResponse getImgCol(@RequestParam(required=true, defaultValue = "0")Integer ic_id,@RequestParam(required=true, defaultValue = "1")Integer page, @RequestParam(required=false,defaultValue="60")Integer pageSize){
+        ResultResponse res=new ResultResponse();
+
+        ImgCol ic = icService.getIcByID(ic_id,page,pageSize);
+
+
+        res.setData(ic);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+
         return res;
     }
 }

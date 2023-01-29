@@ -34,4 +34,6 @@ public interface VcService {
     void changeFollowedState(int videoID);
 
     VideoInfo getVideoMediaInfo(int videoID);
+
+    VideoCol getVcByID(Integer vc_id, Integer page, Integer pageSize);
 }

@@ -9,4 +9,9 @@ public final class Constants {
 
     //视频封面保存路径
     public static final String COVER_SAVE_PATH="I:\\JiLeFile\\video\\cover";
+    //压缩图片保存路径
+    public static final String THUMBNAIL_SAVE_PATH="I:\\JiLeFile\\thumbnail";
+    //图片压缩尺寸
+    public static final int COMPR_WIDTH=620;
+    public static final int COMPR_HEIGHT=620;
 }

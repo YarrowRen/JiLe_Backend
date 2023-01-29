@@ -14,7 +14,15 @@
     <select id="getFirstVC" resultType="VideoCol">
         select * from vc_info LIMIT 0,1;
     </select>
+
+    <select id="getVideoCol" resultType="VideoCol">
+        select * from vc_info WHERE ID=#{vc_id}
+    </select>
     <select id="getFirstVCVideoInfo" resultType="Video">
+        select * from video_info where vc_id=#{id}
+    </select>
+
+    <select id="getVCVideoInfo" resultType="Video">
         select * from video_info where vc_id=#{id}
     </select>
 
