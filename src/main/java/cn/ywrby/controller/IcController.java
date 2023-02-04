@@ -1,8 +1,6 @@
 package cn.ywrby.controller;
 
-import cn.ywrby.domain.ImgCol;
-import cn.ywrby.domain.User;
-import cn.ywrby.domain.VideoCol;
+import cn.ywrby.domain.*;
 import cn.ywrby.res.ResultResponse;
 import cn.ywrby.service.IcService;
 import cn.ywrby.utils.Constants;
@@ -68,6 +66,41 @@ public class IcController {
         res.setCode(Constants.STATUS_OK);
         res.setMessage(Constants.MESSAGE_OK);
 
+        return res;
+    }
+
+    @GetMapping("/getImageTag")
+    public ResultResponse getImageTag(@RequestParam Integer imageID){
+        ResultResponse res=new ResultResponse();
+        List<Tag> imageTag = icService.getImageTag(imageID);
+        res.setData(imageTag);
+        res.setMessage(Constants.MESSAGE_OK);
+        res.setCode(Constants.STATUS_OK);
+        return res;
+    }
+
+    @PostMapping("/updateImageInfo")
+    public ResultResponse updateImageInfo(@RequestBody Image image){
+        ResultResponse res=new ResultResponse();
+        boolean result=icService.updateImageInfo(image);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"修改失败，请检查后重新提交。");
+        }
+
+        return res;
+    }
+
+    @GetMapping("/getImageDetails")
+    public ResultResponse getImageDetails(@RequestParam Integer imageID){
+        ResultResponse res=new ResultResponse();
+        Image image = icService.getImageDetails(imageID);
+        res.setData(image);
+        res.setMessage(Constants.MESSAGE_OK);
+        res.setCode(Constants.STATUS_OK);
         return res;
     }
 }

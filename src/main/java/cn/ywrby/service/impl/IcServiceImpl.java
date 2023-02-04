@@ -119,4 +119,53 @@ public class IcServiceImpl implements IcService {
         return ic;
     }
 
+    @Override
+    public List<Tag> getImageTag(int imageID) {
+        List<Tag> tagList=icMapper.getImageTag(imageID);
+        return tagList;
+    }
+
+    @Override
+    public boolean updateImageInfo(Image image) {
+        //首先更新image_info表单内容
+        icMapper.updateImageInfo(image);
+        //最后处理图片tag信息
+        //首先清空图片所有关联tag
+        icMapper.deleteImageTagByImageID(image.getImageID());
+        List<Tag> tagList = image.getTags();
+        //然后判断Tag是否创建过
+        //然后判断tag是否已经创建
+        for (int i=0;i<tagList.size();i++){
+            Tag tag=tagList.get(i);
+            int result = icMapper.haveTag(tag.getTag_name());
+            if(result==0){
+                //tag不存在 首先创建tag
+                icMapper.addTag(tag);
+            }else {
+                //tag存在 结果值就是tagID
+                tag.setId(result);
+            }
+            //处理video_tag
+            icMapper.addImageTag(image.getImageID(),tag.getId());
+        }
+
+        return true;
+
+    }
+
+    @Override
+    public Image getImageDetails(Integer imageID) {
+        //获取image基本信息
+        Image image=icMapper.getImageByID(imageID);
+        //获取tag列表
+        List<Tag> imageTag = icMapper.getImageTag(imageID);
+        image.setTags(imageTag);
+        //获取imagePath
+        String rootPath = icMapper.getIcPathByID(image.getIc_id());
+        String imagePath=rootPath+"\\"+image.getImageName();
+        image.setImagePath(imagePath);
+
+        return image;
+    }
+
 }

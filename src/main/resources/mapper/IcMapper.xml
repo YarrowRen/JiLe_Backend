@@ -36,4 +36,32 @@
     <select id="getICImageInfo" resultType="Image">
         select * from image_info where ic_id=#{ic_id}
     </select>
+
+    <select id="getImageTag" resultType="Tag">
+        SELECT ti.id,ti.tag_name FROM image_tag it,tag_info ti WHERE it.tag_id=ti.id AND it.image_id=#{imageID}
+    </select>
+
+    <select id="haveTag" resultType="java.lang.Integer">
+        select ifnull((select id from tag_info where tag_name=#{tag_name}),0);
+    </select>
+
+    <insert id="addTag" keyProperty="id" useGeneratedKeys="true" parameterType="Tag">
+        INSERT INTO tag_info (tag_name) VALUES (#{tag_name})
+    </insert>
+
+    <delete id="deleteImageTagByImageID">
+        DELETE FROM image_tag it WHERE it.image_id=#{imageID}
+    </delete>
+
+    <insert id="addImageTag">
+        INSERT INTO image_tag (image_id,tag_id) VALUES (#{imageID},#{tagID})
+    </insert>
+
+    <update id="updateImageInfo">
+        UPDATE image_info ii SET ii.imageScore=#{imageScore},ii.followed=#{followed},ii.createDate=#{createDate},ii.remark=#{remark},ii.url=#{url},ii.imageName=#{imageName} WHERE ii.imageID=#{imageID}
+    </update>
+
+    <select id="getImageByID" resultType="Image">
+        SELECT * FROM image_info ii WHERE ii.imageID=#{imageID} LIMIT 1
+    </select>
 </mapper>
