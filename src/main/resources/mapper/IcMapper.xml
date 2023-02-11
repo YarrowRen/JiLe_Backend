@@ -64,4 +64,8 @@
     <select id="getImageByID" resultType="Image">
         SELECT * FROM image_info ii WHERE ii.imageID=#{imageID} LIMIT 1
     </select>
+
+    <update id="changeFollowedState">
+        UPDATE image_info ii SET ii.followed=ABS(ii.followed-1) WHERE ii.imageID=#{imageID}
+    </update>
 </mapper>

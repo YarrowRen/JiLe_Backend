@@ -40,4 +40,6 @@ public interface IcMapper {
     void updateImageInfo(Image image);
 
     Image getImageByID(Integer imageID);
+
+    void changeFollowedState(int imageID);
 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--映射文件DTD约束头-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--mybatis图集管理映射文件-->
+<mapper namespace="cn.ywrby.mapper.EcMapper">
+
+    <insert id="addEc" keyProperty="id" useGeneratedKeys="true" parameterType="EBookCol">
+        insert into ec_info (ec_name,ec_path,ec_desc) values (#{ec_name},#{ec_path},#{ec_desc})
+    </insert>
+
+    <select id="getEcPathByID" resultType="String">
+        SELECT ei.ec_path FROM ec_info ei WHERE ei.ID=#{ecID}
+    </select>
+
+
+    <select id="getEcByID" resultType="EBook">
+        SELECT * FROM ebook_info ei WHERE ei.ec_id=#{ecID}
+    </select>
+
+    <delete id="deleteEBook">
+        DELETE FROM ebook_info ei WHERE ei.eBookID=#{eBookID};
+    </delete>
+
+    <insert id="addEBook"  keyProperty="eBookID" useGeneratedKeys="true" parameterType="EBook">
+        insert into ebook_info (ec_id,eBookName,eBookTitle,`language`,format,publishDate,publisher,identifier,coverPath,extension,pages) values (#{ec_id},#{eBookName},#{eBookTitle},#{language},#{format},#{publishDate},#{publisher},#{identifier},#{coverPath},#{extension},#{pages})
+    </insert>
+
+    <select id="getEBookByID" resultType="EBook">
+        select * from ebook_info where eBookID=#{eBookID}
+    </select>
+
+    <select id="getEc" resultType="EBookCol">
+        select * from ec_info
+    </select>
+
+
+    <!--使用子查询 如果存在指定人物就返回personID否则返回0-->
+    <select id="havePerson" resultType="java.lang.Integer">
+        select ifnull((select id from person_info where name=#{personName}),0);
+    </select>
+
+    <insert id="addPerson" keyProperty="id" useGeneratedKeys="true" parameterType="Person">
+        INSERT INTO person_info (name) VALUES (#{name})
+    </insert>
+
+    <insert id="addEBookAuthor">
+        INSERT INTO ebook_author (eBookID,personID) VALUES (#{eBookID},#{personID})
+    </insert>
+
+    <select id="getEBookCol" resultType="EBookCol">
+        select * from ec_info WHERE ID=#{ec_id}
+    </select>
+
+    <select id="getECEBookInfo" resultType="EBook">
+        select * from ebook_info where ec_id=#{ec_id}
+    </select>
+
+    <select id="getAuthorsByEBookID" resultType="Person">
+        SELECT pi.* FROM ebook_author ea,person_info pi WHERE ea.personID=pi.id and ea.eBookID=#{eBookID}
+    </select>
+
+    <select id="getTagsByEBookID" resultType="Tag">
+        SELECT ti.id,ti.tag_name FROM ebook_tag et,tag_info ti WHERE et.tag_id=ti.id AND et.ebook_id=#{eBookID}
+    </select>
+
+    <update id="updateEBookInfo">
+        UPDATE ebook_info SET eBookTitle=#{eBookTitle}, `language`=#{language},identifier=#{identifier},pages=#{pages},eBookScore=#{eBookScore},publisher=#{publisher},followed=#{followed},intro=#{intro},publishDate=#{publishDate},url=#{url},coverPath=#{coverPath} WHERE eBookID=#{eBookID}
+    </update>
+
+    <delete id="deleteEBookAuthorByEBookID" >
+        DELETE FROM ebook_author ea WHERE ea.eBookID=#{eBookID}
+    </delete>
+
+    <select id="haveTag" resultType="java.lang.Integer">
+        select ifnull((select id from tag_info where tag_name=#{tag_name}),0);
+    </select>
+
+    <insert id="addTag" keyProperty="id" useGeneratedKeys="true" parameterType="Tag">
+        INSERT INTO tag_info (tag_name) VALUES (#{tag_name})
+    </insert>
+
+
+    <delete id="deleteEBookTagByEBookID">
+        DELETE FROM ebook_tag et WHERE et.ebook_id=#{eBookID}
+    </delete>
+
+    <insert id="addEBookTag">
+        INSERT INTO ebook_tag (ebook_id,tag_id) VALUES (#{eBookID},#{tagID})
+    </insert>
+</mapper>

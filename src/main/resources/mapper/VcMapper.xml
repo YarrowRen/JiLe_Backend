@@ -76,12 +76,12 @@
         select ifnull((select id from tag_info where tag_name=#{tag_name}),0);
     </select>
 
-    <insert id="addPerson" keyProperty="id" useGeneratedKeys="true" parameterType="Person">
-        INSERT INTO person_info (name) VALUES (#{name})
-    </insert>
-
     <insert id="addTag" keyProperty="id" useGeneratedKeys="true" parameterType="Tag">
         INSERT INTO tag_info (tag_name) VALUES (#{tag_name})
+    </insert>
+
+    <insert id="addPerson" keyProperty="id" useGeneratedKeys="true" parameterType="Person">
+        INSERT INTO person_info (name) VALUES (#{name})
     </insert>
 
     <delete id="deletePersonRoleByVideoID" >

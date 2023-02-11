@@ -17,4 +17,6 @@ public interface IcService {
     boolean updateImageInfo(Image image);
 
     Image getImageDetails(Integer imageID);
+
+    void changeFollowedState(int imageID);
 }

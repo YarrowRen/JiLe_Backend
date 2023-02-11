@@ -6,6 +6,7 @@ import cn.ywrby.domain.Person;
 import cn.ywrby.domain.VideoInfo;
 import cn.ywrby.mapper.UserMapper;
 import cn.ywrby.mapper.VcMapper;
+import cn.ywrby.service.EcService;
 import cn.ywrby.utils.FtpUtils;
 import cn.ywrby.utils.ImageUtils;
 import cn.ywrby.utils.VideoUtils;
@@ -30,6 +31,9 @@ class JiLeBackendTests {
 
     @Autowired
     VcMapper vcMapper;
+
+    @Autowired
+    EcService ecService;
 
 
 
@@ -134,4 +138,17 @@ class JiLeBackendTests {
     public void imgTest(){
         ImageUtils.PIC_Compression("I:\\JiLeFile\\test1\\01.jpg","I:\\JiLeFile\\thumbnail",1);
     }
+
+    @Test
+    public void createDir(){
+        File file = new File("I:\\JiLeFile\\xinjian\\xinjian_son\\1.jpg");
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+            System.out.println("新建文件夹");
+        }else {
+            System.out.println("执行结束");
+        }
+    }
+
+
 }

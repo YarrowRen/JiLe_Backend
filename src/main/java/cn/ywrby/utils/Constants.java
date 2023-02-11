@@ -14,4 +14,7 @@ public final class Constants {
     //图片压缩尺寸
     public static final int COMPR_WIDTH=620;
     public static final int COMPR_HEIGHT=620;
+
+    //作家指定roleID
+    public static final int AUTHOR_E_ROLE_ID=5;
 }

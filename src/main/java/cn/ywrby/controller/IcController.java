@@ -103,4 +103,14 @@ public class IcController {
         res.setCode(Constants.STATUS_OK);
         return res;
     }
+
+    @PostMapping("/changeFollowedState")
+    public ResultResponse changeFollowedState(@RequestParam int imageID){
+        ResultResponse res=new ResultResponse();
+        icService.changeFollowedState(imageID);
+
+        res.setCode(Constants.STATUS_OK);
+        res.setData(imageID);
+        return res;
+    }
 }

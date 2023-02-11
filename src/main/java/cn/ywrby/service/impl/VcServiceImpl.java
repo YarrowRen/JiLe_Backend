@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -122,7 +124,14 @@ public class VcServiceImpl implements VcService {
 
         //删除已经不存在的视频文件信息
         for (Video video:vc_delete){
+            video=vcMapper.getVideo(video.getVideoID());
             vcMapper.deleteVideo(video.getVideoID());
+            //删除数据库信息后 删除本地存储的缓存封面图
+            try {
+                Files.delete(Path.of(video.getVideoCover()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         //添加新增视频文件

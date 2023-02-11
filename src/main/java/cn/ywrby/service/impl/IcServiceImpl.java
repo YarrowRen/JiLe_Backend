@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +81,14 @@ public class IcServiceImpl implements IcService {
 
         //删除已经不存在的图片文件信息
         for (Image image:ic_delete){
+            image=icMapper.getImageByID(image.getImageID());
             icMapper.deleteImage(image.getImageID());
+            //删除数据库信息后 删除本地存储的缓存缩略图
+            try {
+                Files.delete(Path.of(image.getThumbnail()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         //添加新增图片文件
@@ -166,6 +175,11 @@ public class IcServiceImpl implements IcService {
         image.setImagePath(imagePath);
 
         return image;
+    }
+
+    @Override
+    public void changeFollowedState(int imageID) {
+        icMapper.changeFollowedState(imageID);
     }
 
 }
