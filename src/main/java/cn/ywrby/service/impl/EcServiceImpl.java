@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EcServiceImpl implements EcService {
@@ -158,9 +156,151 @@ public class EcServiceImpl implements EcService {
     }
 
     @Override
-    public int addEc(EBookCol eBookCol) {
-        int id=ecMapper.addEc(eBookCol);
+    public int addEc(EBookCol eBookCol)  {
+        int id=0;
+        //判断用户是否上传了封面图
+        if(eBookCol.getEc_cover()!=null && !Objects.equals(eBookCol.getEc_cover(), "")){
+            //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+            String ec_cover = eBookCol.getEc_cover();
+            File source=new File(ec_cover);
+            String destPath=Constants.EC_COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+            boolean result = copyFile(ec_cover, destPath);
+            if(result){
+                //封面图复制成功，重写封面图信息后保存
+                eBookCol.setEc_cover(destPath);
+                id=ecMapper.addEc(eBookCol);
+            }
+        }else {
+            //用户未上传封面图 直接添加
+            id=ecMapper.addEc(eBookCol);
+        }
         return id;
+    }
+
+    @Override
+    public boolean copyFile(String source, String dest) {
+        File sourceFile=new File(source);
+        File destFile=new File(dest);
+        //如果不存在指定文件夹则创建
+        if (!destFile.getParentFile().exists()) {
+            destFile.getParentFile().mkdirs();
+        }
+        try {
+            FileUtils.copyFileUsingChannel(sourceFile,destFile);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteEC(int ec_id) {
+        //删除EC前首先删除其封面图缓存文件
+        EBookCol rawEC = ecMapper.getEBookCol(ec_id);
+        if(rawEC.getEc_cover()!=null && !Objects.equals(rawEC.getEc_cover(), "")){
+            File source=new File(rawEC.getEc_cover());
+            source.delete();
+        }
+        ecMapper.deleteEC(ec_id);
+        return true;
+    }
+
+    @Override
+    public boolean updateEC(EBookCol eBookCol) {
+        //判断用户是否上传了封面图
+        if(eBookCol.getEc_cover()!=null && !Objects.equals(eBookCol.getEc_cover(), "")){
+            EBookCol rawEC = ecMapper.getEBookCol(eBookCol.getId());
+            String ec_cover = eBookCol.getEc_cover();
+            String rowCover=rawEC.getEc_cover();
+            boolean result=false;
+            //判断原封面和新封面是否相同（没有更换封面）
+            if(!ec_cover.equals(rowCover)){
+                //封面发生变化 需要修改
+                //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+                File source=new File(ec_cover);
+                String destPath=Constants.EC_COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+                result = copyFile(ec_cover, destPath);
+                if(result){
+                    //封面图复制成功，判断原数据是否存在封面图 如果有则删除
+                    if(rawEC.getEc_cover()!=null && !Objects.equals(rawEC.getEc_cover(), "")){
+                        //原数据中保存了封面图，所以要删除该封面图文件
+                        File temp=new File(rawEC.getEc_cover());
+                        temp.delete();
+                    }
+                    //存入新封面图
+                    eBookCol.setEc_cover(destPath);
+                }else {
+                    return false;
+                }
+            }
+            ecMapper.updateEC(eBookCol);
+            return true;
+        }
+        else {
+            //用户未上传封面图 判断之前是否保存了封面图
+            EBookCol rawEC = ecMapper.getEBookCol(eBookCol.getId());
+            if(rawEC.getEc_cover()!=null && !Objects.equals(rawEC.getEc_cover(), "")){
+                //原数据中保存了封面图，所以要删除该封面图文件
+                File source=new File(rawEC.getEc_cover());
+                source.delete();
+            }
+
+            ecMapper.updateEC(eBookCol);
+            return true;
+        }
+    }
+
+    @Override
+    public boolean deleteEBook(int eBookID) {
+        EBook eBook=ecMapper.getEBookByID(eBookID);
+        String ec_path=ecMapper.getEcPathByID(eBook.getEc_id());
+        String filePath=ec_path+"\\"+eBook.getEBookName();
+
+        File file=new File(filePath);
+        //删除系统中视频文件
+        file.delete();
+        //删除数据库中视频文件
+        ecMapper.deleteEBook(eBookID);
+        return true;
+    }
+
+    @Override
+    public EBookCol searchEC(int ec_id, int type, List<String> searchList) {
+        EBookCol ec=ecMapper.getEBookCol(ec_id);
+        List<Integer> idList=new ArrayList<>();
+
+        if (type==1){
+            idList=ecMapper.searchEBookTitle(ec_id,searchList);
+        }else if (type==2){
+            idList=ecMapper.searchEBookAuthor(ec_id,searchList);
+        }else if (type==3){
+            idList=ecMapper.searchEBookTag(ec_id,searchList);
+        }else if(type==4){
+            idList=ecMapper.searchEBookPublisher(ec_id,searchList);
+        }else {
+            idList=ecMapper.searchEBookTitle(ec_id,searchList);
+        }
+        List<EBook> eBookList=new ArrayList<>();
+
+        for (int i=0;i<idList.size();i++){
+            EBook eBook = ecMapper.getEBookByID(idList.get(i));
+            eBookList.add(eBook);
+        }
+        for(int i = 0; i< eBookList.size(); i++){
+            EBook eBook= eBookList.get(i);
+            List<Person> authorList=ecMapper.getAuthorsByEBookID(eBook.getEBookID());
+            eBook.setAuthorList(authorList);
+            List<Tag> tagList=ecMapper.getTagsByEBookID(eBook.getEBookID());
+            eBook.setTags(tagList);
+            eBookList.set(i,eBook);
+        }
+
+        //获取分页信息
+        PageInfo<EBook> info=new PageInfo<EBook>(eBookList);
+        //存入分页信息
+        ec.setEc_info(info);
+        return ec;
     }
 
     @Override
@@ -196,6 +336,24 @@ public class EcServiceImpl implements EcService {
 
     @Override
     public boolean updateEBookDetails(EBook eBook) {
+        //判断封面是否发生改变，发生改变的话则重新复制封面到缓存文件夹并删除原封面
+        EBook rawEBook=ecMapper.getEBookByID(eBook.getEBookID());
+        if(rawEBook.getCoverPath()!=eBook.getCoverPath()){
+            //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+            String cover = eBook.getCoverPath();
+            File source=new File(cover);
+            String destPath=Constants.THUMBNAIL_SAVE_PATH+"\\"+"eBook"+"\\"+eBook.getEc_id()+"\\"+System.currentTimeMillis()+"-"+source.getName();
+            boolean result = copyFile(cover, destPath);
+            if (result){
+                //复制成功 删除原封面 写入新封面数据
+                File rawCover=new File(rawEBook.getCoverPath());
+                rawCover.delete();
+                eBook.setCoverPath(destPath);
+            }else {
+                //复制错误 返回失败
+                return false;
+            }
+        }
         //逐个修改表单内容
         //先处理位于ebook_info表内的所有信息
         ecMapper.updateEBookInfo(eBook);
@@ -238,6 +396,18 @@ public class EcServiceImpl implements EcService {
         }
 
         return true;
+    }
+
+    @Override
+    public List<EBook> getRandomEBook(int num) {
+        List<EBook> eBookList=ecMapper.getRandomEBook(num);
+        //由于是随机获取电子书，所以需要为每本电子书填入文件路径
+        for(EBook eBook:eBookList){
+            int ec_id = eBook.getEc_id();
+            String ecPath = ecMapper.getEcPathByID(ec_id);
+            eBook.setFilePath(ecPath+"\\"+eBook.getEBookName());
+        }
+        return eBookList;
     }
 
 }

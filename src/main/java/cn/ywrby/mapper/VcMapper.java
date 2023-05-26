@@ -58,4 +58,10 @@ public interface VcMapper {
     List<Video> getVCVideoInfo(int id);
 
     VideoCol getVideoCol(Integer vc_id);
+
+    List<Video> getRandomVideo(int num);
+
+    void deleteVC(int vc_id);
+
+    void updateVC(VideoCol videoCol);
 }

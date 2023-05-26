@@ -19,4 +19,5 @@ public class VideoCol {
     private String vc_desc;
     private List<Video> video_list;
     private PageInfo<Video> vc_info;
+    private String vc_cover;
 }

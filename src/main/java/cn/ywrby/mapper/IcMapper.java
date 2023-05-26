@@ -42,4 +42,10 @@ public interface IcMapper {
     Image getImageByID(Integer imageID);
 
     void changeFollowedState(int imageID);
+
+    List<Image> getRandomImage(int num);
+
+    void deleteIC(int ic_id);
+
+    void updateIC(ImgCol imgCol);
 }

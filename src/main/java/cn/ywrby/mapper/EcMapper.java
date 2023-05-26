@@ -53,4 +53,17 @@ public interface EcMapper {
     void deleteEBookTagByEBookID(int eBookID);
 
     void addEBookTag(int eBookID, int tagID);
+
+    List<EBook> getRandomEBook(int num);
+
+    void deleteEC(int ec_id);
+
+    void updateEC(EBookCol eBookCol);
+
+    List<Integer> searchEBookTitle(int ecID,List<String> searchList);
+    List<Integer> searchEBookPublisher(int ecID,List<String> searchList);
+    List<Integer> searchEBookAuthor(int ecID,List<String> searchList);
+    List<Integer> searchEBookTag(int ecID,List<String> searchList);
+
+    int getMaxEBookID();
 }

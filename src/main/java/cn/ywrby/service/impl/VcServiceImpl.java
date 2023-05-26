@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class VcServiceImpl implements VcService {
@@ -28,9 +29,46 @@ public class VcServiceImpl implements VcService {
     @Autowired
     VcMapper vcMapper;
 
+
+    @Override
+    public boolean copyFile(String source, String dest) {
+        File sourceFile=new File(source);
+        File destFile=new File(dest);
+        //如果不存在指定文件夹则创建
+        if (!destFile.getParentFile().exists()) {
+            destFile.getParentFile().mkdirs();
+        }
+        try {
+            FileUtils.copyFileUsingChannel(sourceFile,destFile);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
     @Override
     public int addVc(VideoCol videoCol) {
-        int id=vcMapper.addVc(videoCol);
+//        int id=vcMapper.addVc(videoCol);
+
+        int id=0;
+        //判断用户是否上传了封面图
+        if(videoCol.getVc_cover()!=null && !Objects.equals(videoCol.getVc_cover(), "")){
+            //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+            String vc_cover = videoCol.getVc_cover();
+            File source=new File(vc_cover);
+            String destPath=Constants.VC_COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+            boolean result = copyFile(vc_cover, destPath);
+            if(result){
+                //封面图复制成功，重写封面图信息后保存
+                videoCol.setVc_cover(destPath);
+                id=vcMapper.addVc(videoCol);
+            }
+        }else {
+            //用户未上传封面图 直接添加
+            id=vcMapper.addVc(videoCol);
+        }
         return id;
     }
 
@@ -189,7 +227,40 @@ public class VcServiceImpl implements VcService {
 
     @Override
     public void editVideoCover(int videoID, String coverPath) {
-        vcMapper.updateVideoCover(videoID,coverPath);
+
+        Video rowVideo=vcMapper.getVideo(videoID);
+        String rowCover=rowVideo.getVideoCover();
+
+        if(!coverPath.equals(rowCover)){
+            //封面图发生变化，复制封面图到缓存文件夹并删除原封面
+            //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+            boolean result=false;
+            File source=new File(coverPath);
+            String destPath=Constants.COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+            if(coverPath==null||coverPath.equals("")){
+                //传回的封面为空，不需要复制，只需要删除原封面
+                if(rowCover!=null && !Objects.equals(rowCover, "")){
+                    //原数据中保存了封面图，所以要删除该封面图文件
+                    File temp=new File(rowCover);
+                    temp.delete();
+                }
+                //存入新封面图
+                vcMapper.updateVideoCover(videoID,null);
+            }else {
+                result = copyFile(coverPath, destPath);
+
+                if(result){
+                    //封面图复制成功，判断原数据是否存在封面图 如果有则删除
+                    if(rowCover!=null && !Objects.equals(rowCover, "")){
+                        //原数据中保存了封面图，所以要删除该封面图文件
+                        File temp=new File(rowCover);
+                        temp.delete();
+                    }
+                    //存入新封面图
+                    vcMapper.updateVideoCover(videoID,destPath);
+                }
+            }
+        }
     }
 
     @Override
@@ -221,6 +292,30 @@ public class VcServiceImpl implements VcService {
     public boolean updateVideoDetails(Video video) {
         //逐个修改表单内容
         //先处理位于video_info表内的所有信息
+        //判断封面图是否更新
+        Video rowVideo=vcMapper.getVideo(video.getVideoID());
+        String cover=video.getVideoCover();
+        String rowCover=rowVideo.getVideoCover();
+        if(!cover.equals(rowCover)){
+            //封面图发生变化，复制封面图到缓存文件夹并删除原封面
+            //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+            boolean result=false;
+            File source=new File(cover);
+            String destPath=Constants.COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+            result = copyFile(cover, destPath);
+            if(result){
+                //封面图复制成功，判断原数据是否存在封面图 如果有则删除
+                if(rowCover!=null && !Objects.equals(rowCover, "")){
+                    //原数据中保存了封面图，所以要删除该封面图文件
+                    File temp=new File(rowCover);
+                    temp.delete();
+                }
+                //存入新封面图
+                video.setVideoCover(destPath);
+            }else {
+                return false;
+            }
+        }
         vcMapper.updateVideoInfo(video);
         //再处理角色信息内容
         //首先清空对应视频的人物关系表
@@ -287,11 +382,8 @@ public class VcServiceImpl implements VcService {
 
     @Override
     public VideoCol getVcByID(Integer vc_id, Integer page, Integer pageSize) {
-
-
         //获取视频合集基本信息
         VideoCol vc=vcMapper.getVideoCol(vc_id);
-
 
         //获取分页插件对象
         PageHelper pageHelper=new PageHelper();
@@ -305,6 +397,75 @@ public class VcServiceImpl implements VcService {
         //存入分页信息
         vc.setVc_info(info);
         return vc;
+    }
+
+    @Override
+    public List<Video> getRandomVideo(int num) {
+        List<Video> videoList=vcMapper.getRandomVideo(num);
+        //由于是随机获取电子书，所以需要为每本电子书填入文件路径
+        for(Video video:videoList){
+            int vc_id = video.getVc_id();
+            String vcPath = vcMapper.getVcPathByID(vc_id);
+            video.setVideoPath(vcPath+"\\"+video.getVideoName());
+        }
+        return videoList;
+    }
+
+    @Override
+    public boolean deleteVC(int vc_id) {
+        //删除VC前首先删除其封面图缓存文件
+        VideoCol rawVC = vcMapper.getVideoCol(vc_id);
+        if(rawVC.getVc_cover()!=null && !Objects.equals(rawVC.getVc_cover(), "")){
+            File source=new File(rawVC.getVc_cover());
+            source.delete();
+        }
+        vcMapper.deleteVC(vc_id);
+        return true;
+    }
+
+    @Override
+    public boolean updateVC(VideoCol videoCol) {
+        //判断用户是否上传了封面图
+        if(videoCol.getVc_cover()!=null && !Objects.equals(videoCol.getVc_cover(), "")){
+            VideoCol rawVC = vcMapper.getVideoCol(videoCol.getId());
+            String vc_cover = videoCol.getVc_cover();
+            String rowCover=rawVC.getVc_cover();
+            boolean result=false;
+            //判断原封面和新封面是否相同（没有更换封面）
+            if(!vc_cover.equals(rowCover)){
+                //封面发生变化 需要修改
+                //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+                File source=new File(vc_cover);
+                String destPath=Constants.VC_COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+                result = copyFile(vc_cover, destPath);
+                if(result){
+                    //封面图复制成功，判断原数据是否存在封面图 如果有则删除
+                    if(rawVC.getVc_cover()!=null && !Objects.equals(rawVC.getVc_cover(), "")){
+                        //原数据中保存了封面图，所以要删除该封面图文件
+                        File temp=new File(rawVC.getVc_cover());
+                        temp.delete();
+                    }
+                    //存入新封面图
+                    videoCol.setVc_cover(destPath);
+                }else {
+                    return false;
+                }
+            }
+            vcMapper.updateVC(videoCol);
+            return true;
+        }
+        else {
+            //用户未上传封面图 判断之前是否保存了封面图
+            VideoCol rawVC = vcMapper.getVideoCol(videoCol.getId());
+            if(rawVC.getVc_cover()!=null && !Objects.equals(rawVC.getVc_cover(), "")){
+                //原数据中保存了封面图，所以要删除该封面图文件
+                File source=new File(rawVC.getVc_cover());
+                source.delete();
+            }
+
+            vcMapper.updateVC(videoCol);
+            return true;
+        }
     }
 
 }

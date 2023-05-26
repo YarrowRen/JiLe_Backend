@@ -19,4 +19,7 @@ public class EBookCol {
     private String ec_desc;
     private List<EBook> EBook_list;
     private PageInfo<EBook> ec_info;
+
+    //展示用封面图
+    private String ec_cover;
 }

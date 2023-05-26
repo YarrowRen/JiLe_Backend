@@ -6,7 +6,7 @@
 <mapper namespace="cn.ywrby.mapper.EcMapper">
 
     <insert id="addEc" keyProperty="id" useGeneratedKeys="true" parameterType="EBookCol">
-        insert into ec_info (ec_name,ec_path,ec_desc) values (#{ec_name},#{ec_path},#{ec_desc})
+        insert into ec_info (ec_name,ec_path,ec_desc,ec_cover) values (#{ec_name},#{ec_path},#{ec_desc},#{ec_cover})
     </insert>
 
     <select id="getEcPathByID" resultType="String">
@@ -88,4 +88,49 @@
     <insert id="addEBookTag">
         INSERT INTO ebook_tag (ebook_id,tag_id) VALUES (#{eBookID},#{tagID})
     </insert>
+
+    <select id="getRandomEBook" resultType="EBook">
+        SELECT * FROM ebook_info order by rand() limit #{num};
+    </select>
+
+    <delete id="deleteEC">
+
+        DELETE FROM ec_info WHERE id=#{ec_id}
+    </delete>
+
+    <update id="updateEC">
+        UPDATE ec_info SET ec_name=#{ec_name},ec_desc=#{ec_desc},ec_cover=#{ec_cover} WHERE id=#{id}
+    </update>
+
+    <select id="searchEBookTitle" resultType="java.lang.Integer">
+        SELECT eBookID FROM ebook_info WHERE  ec_id=#{ecID} AND
+        <foreach collection="searchList" item="item" index="index"  separator="AND">
+            eBookTitle LIKE "%"#{item}"%"
+        </foreach>
+    </select>
+
+    <select id="searchEBookPublisher" resultType="java.lang.Integer">
+        SELECT eBookID FROM ebook_info WHERE  ec_id=#{ecID} AND
+        <foreach collection="searchList" item="item" index="index"  separator="AND">
+            publisher LIKE "%"#{item}"%"
+        </foreach>
+    </select>
+
+    <select id="searchEBookAuthor" resultType="java.lang.Integer">
+        SELECT ei.eBookID FROM ebook_info ei,ebook_author ea,person_info pi WHERE ei.eBookID=ea.eBookID AND pi.id=ea.personID  AND ei.ec_id=#{ecID} AND
+        <foreach collection="searchList" item="item" index="index"  separator="AND">
+             pi.`name` LIKE "%"#{item}"%"
+        </foreach>
+    </select>
+
+    <select id="searchEBookTag" resultType="java.lang.Integer">
+        SELECT ei.eBookID FROM ebook_info ei,ebook_tag et,tag_info ti WHERE ei.eBookID=et.ebook_id AND ti.id=et.tag_id AND  ei.ec_id=#{ecID} AND
+        <foreach collection="searchList" item="item" index="index"  separator="AND">
+            ti.tag_name LIKE "%"#{item}"%"
+        </foreach>
+    </select>
+
+    <select id="getMaxEBookID" resultType="java.lang.Integer">
+        SELECT MAX(eBookID) FROM ebook_info
+    </select>
 </mapper>

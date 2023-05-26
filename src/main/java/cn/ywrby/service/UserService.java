@@ -8,6 +8,5 @@ import java.util.List;
 public interface UserService {
 
 
-
-
+    boolean copyFile(String source, String dest);
 }

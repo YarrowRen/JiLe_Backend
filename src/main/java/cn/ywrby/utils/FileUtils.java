@@ -1,18 +1,18 @@
 package cn.ywrby.utils;
 
-import cn.ywrby.service.EcService;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import de.androidpit.colorthief.ColorThief;
+import de.androidpit.colorthief.MMCQ;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class FileUtils {
@@ -198,8 +198,54 @@ public class FileUtils {
         return filename;
     }
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * 复制文件
+     * @param source
+     * @param dest
+     * @throws IOException
+     */
+    public static void copyFileUsingChannel(File source, File dest) throws IOException {
+        FileChannel sourceChannel = null;
+        FileChannel destChannel = null;
+        try {
+            sourceChannel = new FileInputStream(source).getChannel();
+            destChannel = new FileOutputStream(dest).getChannel();
+            destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        }finally{
+            sourceChannel.close();
+            destChannel.close();
+        }
     }
 
 
+
+    /**
+     * 获取图片主色调
+     * @param pathname 文件路径
+     * @return
+     * @throws IOException
+     */
+    public static int[][] getMainColor(String pathname,int colorCount) throws IOException {
+        BufferedImage img = ImageIO.read(new File(pathname));
+
+        MMCQ.CMap result = ColorThief.getColorMap(img, colorCount);
+        int[][] colorMap=new int[colorCount][3];
+        for(int i=0;i<result.vboxes.size();i++){
+            MMCQ.VBox vBox=result.vboxes.get(i);
+            int[] rgb = vBox.avg(false);
+            colorMap[i]=rgb;
+        }
+        return colorMap;
+    }
+
+    public static void main(String[] args) throws IOException {
+        long startTime=System.currentTimeMillis(); //获取开始时间
+        int[][] mainColor = getMainColor("I:\\JiLeFile\\test1\\01.jpg", 5);
+        for (int[] rgb:mainColor){
+            System.out.println(rgb[0]+":"+rgb[1]+":"+rgb[2]);
+        }
+        long endTime=System.currentTimeMillis(); //获取结束时间
+        System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
+
+    }
 }

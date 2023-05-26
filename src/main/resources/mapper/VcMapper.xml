@@ -6,7 +6,7 @@
 <mapper namespace="cn.ywrby.mapper.VcMapper">
 
     <insert id="addVc" keyProperty="id" useGeneratedKeys="true" parameterType="VideoCol">
-        insert into vc_info (vc_name,vc_path,vc_desc) values (#{vc_name},#{vc_path},#{vc_desc})
+        insert into vc_info (vc_name,vc_path,vc_desc,vc_cover) values (#{vc_name},#{vc_path},#{vc_desc},#{vc_cover})
     </insert>
     <select id="getVc" resultType="VideoCol">
         select * from vc_info
@@ -102,5 +102,18 @@
 
     <update id="changeFollowedState">
         UPDATE video_info vi SET vi.followed=ABS(vi.followed-1) WHERE vi.videoID=#{videoID}
+    </update>
+
+
+    <select id="getRandomVideo" resultType="Video">
+        SELECT * FROM video_info order by rand() limit #{num};
+    </select>
+
+    <delete id="deleteVC">
+        DELETE FROM vc_info WHERE id=#{vc_id}
+    </delete>
+
+    <update id="updateVC">
+        UPDATE vc_info SET vc_name=#{vc_name},vc_desc=#{vc_desc},vc_cover=#{vc_cover} WHERE id=#{id}
     </update>
 </mapper>

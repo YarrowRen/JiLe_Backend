@@ -35,5 +35,7 @@ public class EBook {
     private String extension;  //书籍扩展名（zip,cbz,epub）
     private int pages;  //页数
 
+    private String filePath;  //文件路径 只在一些情况下使用
+
 
 }

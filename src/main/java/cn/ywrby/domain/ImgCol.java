@@ -19,4 +19,5 @@ public class ImgCol {
     private String ic_desc;
     private List<Image> image_list;
     private PageInfo<Image> ic_info;
+    private String ic_cover;
 }

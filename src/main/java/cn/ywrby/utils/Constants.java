@@ -11,6 +11,12 @@ public final class Constants {
     public static final String COVER_SAVE_PATH="I:\\JiLeFile\\video\\cover";
     //压缩图片保存路径
     public static final String THUMBNAIL_SAVE_PATH="I:\\JiLeFile\\thumbnail";
+    //书库封面保存路径
+    public static final String EC_COVER_SAVE_PATH="I:\\JiLeFile\\thumbnail\\ec_cover";
+    //图集封面保存路径
+    public static final String IC_COVER_SAVE_PATH="I:\\JiLeFile\\thumbnail\\ic_cover";
+    //影集封面保存路径
+    public static final String VC_COVER_SAVE_PATH="I:\\JiLeFile\\thumbnail\\vc_cover";
     //图片压缩尺寸
     public static final int COMPR_WIDTH=620;
     public static final int COMPR_HEIGHT=620;

@@ -6,7 +6,7 @@
 <mapper namespace="cn.ywrby.mapper.IcMapper">
 
     <insert id="addIc" keyProperty="id" useGeneratedKeys="true" parameterType="ImgCol">
-        insert into ic_info (ic_name,ic_path,ic_desc) values (#{ic_name},#{ic_path},#{ic_desc})
+        insert into ic_info (ic_name,ic_path,ic_desc,ic_cover) values (#{ic_name},#{ic_path},#{ic_desc},#{ic_cover})
     </insert>
 
     <select id="getIc" resultType="ImgCol">
@@ -67,5 +67,18 @@
 
     <update id="changeFollowedState">
         UPDATE image_info ii SET ii.followed=ABS(ii.followed-1) WHERE ii.imageID=#{imageID}
+    </update>
+
+    <select id="getRandomImage" resultType="Image">
+        SELECT * FROM image_info order by rand() limit #{num};
+    </select>
+
+    <delete id="deleteIC">
+
+        DELETE FROM ic_info WHERE id=#{ic_id}
+    </delete>
+
+    <update id="updateIC">
+        UPDATE ic_info SET ic_name=#{ic_name},ic_desc=#{ic_desc},ic_cover=#{ic_cover} WHERE id=#{id}
     </update>
 </mapper>

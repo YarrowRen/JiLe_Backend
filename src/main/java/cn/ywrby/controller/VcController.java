@@ -1,9 +1,6 @@
 package cn.ywrby.controller;
 
-import cn.ywrby.domain.ImgCol;
-import cn.ywrby.domain.Video;
-import cn.ywrby.domain.VideoCol;
-import cn.ywrby.domain.VideoInfo;
+import cn.ywrby.domain.*;
 import cn.ywrby.res.ResultResponse;
 import cn.ywrby.service.VcService;
 import cn.ywrby.utils.Constants;
@@ -83,16 +80,14 @@ public class VcController {
      * @return
      */
     @GetMapping("/getVideoCol")
-    public ResultResponse getVideoCol(@RequestParam(required=true, defaultValue = "0")Integer vc_id,@RequestParam(required=true, defaultValue = "1")Integer page, @RequestParam(required=false,defaultValue="12")Integer pageSize){
+    public ResultResponse getVideoCol(@RequestParam(required=true, defaultValue = "0")Integer vc_id,
+                                      @RequestParam(required=true, defaultValue = "1")Integer page,
+                                      @RequestParam(required=false,defaultValue="12")Integer pageSize){
         ResultResponse res=new ResultResponse();
-
         VideoCol vc = vcService.getVcByID(vc_id,page,pageSize);
-
-
         res.setData(vc);
         res.setCode(Constants.STATUS_OK);
         res.setMessage(Constants.MESSAGE_OK);
-
         return res;
     }
 
@@ -201,6 +196,47 @@ public class VcController {
         res.setCode(Constants.STATUS_OK);
         res.setMessage(Constants.MESSAGE_OK);
         res.setData(info);
+
+        return res;
+    }
+
+    @GetMapping("/getRandomVideo")
+    public ResultResponse getRandomEBook(@RequestParam int num){
+        ResultResponse res=new ResultResponse();
+        List<Video> videoList= vcService.getRandomVideo(num);
+        res.setData(videoList);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        return res;
+    }
+    @PostMapping("/deleteVC")
+    public ResultResponse deleteVC(@RequestParam int vc_id){
+        ResultResponse res=new ResultResponse();
+        boolean result=vcService.deleteVC(vc_id);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"删除失败，请刷新后重试");
+        }
+
+        return res;
+    }
+
+    @PostMapping("/updateVC")
+    public ResultResponse updateVC(@RequestBody VideoCol videoCol ){
+        ResultResponse res=new ResultResponse();
+
+        boolean result=vcService.updateVC(videoCol);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"修改失败，请检查后重新提交。");
+        }
+
 
         return res;
     }

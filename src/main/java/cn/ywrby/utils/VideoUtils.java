@@ -28,31 +28,19 @@ public class VideoUtils {
             grabber = new FFmpegFrameGrabber(file);
             // 启动 FFmpeg
             grabber.start();
-
             // 读取视频帧数
             videoInfo.setLengthInFrames(grabber.getLengthInVideoFrames());
-
             // 读取视频帧率
             videoInfo.setFrameRate(grabber.getVideoFrameRate());
-
             // 读取视频秒数
             videoInfo.setDuration(grabber.getLengthInTime() / 1000000.00);
-
             // 读取视频宽度
             videoInfo.setWidth(grabber.getImageWidth());
-
             // 读取视频高度
             videoInfo.setHeight(grabber.getImageHeight());
-
-
             videoInfo.setAudioChannel(grabber.getAudioChannels());
-
             videoInfo.setVideoCode(grabber.getVideoCodecName());
-
             videoInfo.setAudioCode(grabber.getAudioCodecName());
-//            String md5=MD5Util.getMD5(file);
-//            videoInfo.setMd5(md5);
-
             videoInfo.setSampleRate(grabber.getSampleRate());
             return videoInfo;
         } catch (Exception e) {

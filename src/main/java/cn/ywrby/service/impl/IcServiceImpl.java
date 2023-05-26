@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class IcServiceImpl implements IcService {
@@ -34,8 +35,42 @@ public class IcServiceImpl implements IcService {
 
 
     @Override
+    public boolean copyFile(String source, String dest) {
+        File sourceFile=new File(source);
+        File destFile=new File(dest);
+        //如果不存在指定文件夹则创建
+        if (!destFile.getParentFile().exists()) {
+            destFile.getParentFile().mkdirs();
+        }
+        try {
+            FileUtils.copyFileUsingChannel(sourceFile,destFile);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public int addIc(ImgCol imgCol) {
-        int id=icMapper.addIc(imgCol);
+
+        int id=0;
+        //判断用户是否上传了封面图
+        if(imgCol.getIc_cover()!=null && !Objects.equals(imgCol.getIc_cover(), "")){
+            //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+            String ic_cover = imgCol.getIc_cover();
+            File source=new File(ic_cover);
+            String destPath=Constants.IC_COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+            boolean result = copyFile(ic_cover, destPath);
+            if(result){
+                //封面图复制成功，重写封面图信息后保存
+                imgCol.setIc_cover(destPath);
+                id=icMapper.addIc(imgCol);
+            }
+        }else {
+            //用户未上传封面图 直接添加
+            id=icMapper.addIc(imgCol);
+        }
         return id;
     }
 
@@ -180,6 +215,87 @@ public class IcServiceImpl implements IcService {
     @Override
     public void changeFollowedState(int imageID) {
         icMapper.changeFollowedState(imageID);
+    }
+
+    @Override
+    public boolean deleteImage(int imageID) {
+        //删除本地文件
+        Image image = icMapper.getImageByID(imageID);
+        ImgCol ic=icMapper.getImgCol(image.getIc_id());
+        File file=new File(icMapper.getIcPathByID(ic.getId())+"\\"+image.getImageName());
+        file.delete();
+        //删除数据库文件
+        icMapper.deleteImage(imageID);
+        return true;
+    }
+
+    @Override
+    public List<Image> getRandomImage(int num) {
+        List<Image> imageList=icMapper.getRandomImage(num);
+        //由于是随机获取电子书，所以需要为每本电子书填入文件路径
+        for(Image image:imageList){
+            int ic_id = image.getIc_id();
+            String icPath = icMapper.getIcPathByID(ic_id);
+            image.setImagePath(icPath+"\\"+image.getImageName());
+        }
+        return imageList;
+    }
+
+    @Override
+    public boolean deleteIC(int ic_id) {
+        //删除IC前首先删除其封面图缓存文件
+        ImgCol rawIC = icMapper.getImgCol(ic_id);
+        if(rawIC.getIc_cover()!=null && !Objects.equals(rawIC.getIc_cover(), "")){
+            File source=new File(rawIC.getIc_cover());
+            source.delete();
+        }
+        icMapper.deleteIC(ic_id);
+        return true;
+    }
+
+    @Override
+    public boolean updateIC(ImgCol imgCol) {
+        //判断用户是否上传了封面图
+        if(imgCol.getIc_cover()!=null && !Objects.equals(imgCol.getIc_cover(), "")){
+            ImgCol rawIC = icMapper.getImgCol(imgCol.getId());
+            String ic_cover = imgCol.getIc_cover();
+            String rowCover=rawIC.getIc_cover();
+            boolean result=false;
+            //判断原封面和新封面是否相同（没有更换封面）
+            if(!ic_cover.equals(rowCover)){
+                //封面发生变化 需要修改
+                //首先将封面图复制到缓存文件夹，并按缓存文件夹存储
+                File source=new File(ic_cover);
+                String destPath=Constants.IC_COVER_SAVE_PATH+"\\"+System.currentTimeMillis()+"-"+source.getName();
+                result = copyFile(ic_cover, destPath);
+                if(result){
+                    //封面图复制成功，判断原数据是否存在封面图 如果有则删除
+                    if(rawIC.getIc_cover()!=null && !Objects.equals(rawIC.getIc_cover(), "")){
+                        //原数据中保存了封面图，所以要删除该封面图文件
+                        File temp=new File(rawIC.getIc_cover());
+                        temp.delete();
+                    }
+                    //存入新封面图
+                    imgCol.setIc_cover(destPath);
+                }else {
+                    return false;
+                }
+            }
+            icMapper.updateIC(imgCol);
+            return true;
+        }
+        else {
+            //用户未上传封面图 判断之前是否保存了封面图
+            ImgCol rawIC = icMapper.getImgCol(imgCol.getId());
+            if(rawIC.getIc_cover()!=null && !Objects.equals(rawIC.getIc_cover(), "")){
+                //原数据中保存了封面图，所以要删除该封面图文件
+                File source=new File(rawIC.getIc_cover());
+                source.delete();
+            }
+
+            icMapper.updateIC(imgCol);
+            return true;
+        }
     }
 
 }

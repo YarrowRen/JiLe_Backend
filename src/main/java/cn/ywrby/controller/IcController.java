@@ -4,9 +4,11 @@ import cn.ywrby.domain.*;
 import cn.ywrby.res.ResultResponse;
 import cn.ywrby.service.IcService;
 import cn.ywrby.utils.Constants;
+import cn.ywrby.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -56,16 +58,14 @@ public class IcController {
     }
 
     @GetMapping("/getImgCol")
-    public ResultResponse getImgCol(@RequestParam(required=true, defaultValue = "0")Integer ic_id,@RequestParam(required=true, defaultValue = "1")Integer page, @RequestParam(required=false,defaultValue="60")Integer pageSize){
+    public ResultResponse getImgCol(@RequestParam(required=true, defaultValue = "0")Integer ic_id,
+                                    @RequestParam(required=true, defaultValue = "1")Integer page,
+                                    @RequestParam(required=false,defaultValue="60")Integer pageSize){
         ResultResponse res=new ResultResponse();
-
         ImgCol ic = icService.getIcByID(ic_id,page,pageSize);
-
-
         res.setData(ic);
         res.setCode(Constants.STATUS_OK);
         res.setMessage(Constants.MESSAGE_OK);
-
         return res;
     }
 
@@ -113,4 +113,70 @@ public class IcController {
         res.setData(imageID);
         return res;
     }
+
+    @GetMapping("/getMainColor")
+    public ResultResponse getMainColor(@RequestParam String filePath,@RequestParam int colorCount) throws IOException {
+        ResultResponse res=new ResultResponse();
+        int[][] mainColor = FileUtils.getMainColor(filePath, colorCount);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        res.setData(mainColor);
+        return res;
+    }
+
+    @PostMapping("/deleteImage")
+    public ResultResponse deleteImage(@RequestParam int imageID){
+        ResultResponse res=new ResultResponse();
+        boolean result=icService.deleteImage(imageID);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"删除失败，请刷新后重试");
+        }
+
+        return res;
+    }
+
+    @GetMapping("/getRandomImage")
+    public ResultResponse getRandomImage(@RequestParam int num){
+        ResultResponse res=new ResultResponse();
+        List<Image> imageList= icService.getRandomImage(num);
+        res.setData(imageList);
+        res.setCode(Constants.STATUS_OK);
+        res.setMessage(Constants.MESSAGE_OK);
+        return res;
+    }
+    @PostMapping("/deleteIC")
+    public ResultResponse deleteIC(@RequestParam int ic_id){
+        ResultResponse res=new ResultResponse();
+        boolean result=icService.deleteIC(ic_id);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"删除失败，请刷新后重试");
+        }
+        return res;
+    }
+
+    @PostMapping("/updateIC")
+    public ResultResponse updateIC(@RequestBody ImgCol imgCol ){
+        ResultResponse res=new ResultResponse();
+
+        boolean result=icService.updateIC(imgCol);
+        if(result){
+            res.setCode(Constants.STATUS_OK);
+            res.setMessage(Constants.MESSAGE_OK);
+        }else {
+            res.setCode(Constants.STATUS_FAIL);
+            res.setMessage(Constants.MESSAGE_FAIL+"修改失败，请检查后重新提交。");
+        }
+
+
+        return res;
+    }
+
 }

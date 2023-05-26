@@ -5,6 +5,8 @@ import cn.ywrby.domain.*;
 import java.util.List;
 
 public interface VcService {
+
+    public boolean copyFile(String source, String dest);
     int addVc(VideoCol videoCol);
 
     List<VideoCol> getVc();
@@ -36,4 +38,10 @@ public interface VcService {
     VideoInfo getVideoMediaInfo(int videoID);
 
     VideoCol getVcByID(Integer vc_id, Integer page, Integer pageSize);
+
+    List<Video> getRandomVideo(int num);
+
+    boolean deleteVC(int vc_id);
+
+    boolean updateVC(VideoCol videoCol);
 }
