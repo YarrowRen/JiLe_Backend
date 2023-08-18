@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,6 +149,13 @@ class JiLeBackendTests {
         }else {
             System.out.println("执行结束");
         }
+    }
+
+    @Test
+    public void fileToURL(){
+        File file=new File("G:\\椎名桃子\\st1_shiina_m2_01\\st1_shiina_m2_01_001.jpg");
+        URI uri = file.toURI();
+        System.out.println("uriyw is : "+uri.toString());
     }
 
 

@@ -155,6 +155,10 @@ public class IcServiceImpl implements IcService {
         PageMethod.startPage(page,pageSize);
 
         List<Image> imageInfo = icMapper.getICImageInfo(ic_id);
+        String icPath=ic.getIc_path();
+        for(Image image: imageInfo){
+            image.setImagePath(icPath+"\\"+image.getImageName());
+        }
 
         //获取分页信息
         PageInfo<Image> info=new PageInfo<Image>(imageInfo);

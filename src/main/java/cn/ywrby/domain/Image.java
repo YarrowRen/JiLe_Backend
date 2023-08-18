@@ -25,4 +25,6 @@ public class Image {
     private Date createDate;
     private String url;
     private List<Tag> tags;
+    private String imageURL;
+    private String thumbURL;
 }

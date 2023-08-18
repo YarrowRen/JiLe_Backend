@@ -7,6 +7,8 @@ import cn.ywrby.utils.Constants;
 import cn.ywrby.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,6 +65,28 @@ public class IcController {
                                     @RequestParam(required=false,defaultValue="60")Integer pageSize){
         ResultResponse res=new ResultResponse();
         ImgCol ic = icService.getIcByID(ic_id,page,pageSize);
+
+        //获取图片URL
+        for (Image image : ic.getIc_info().getList()) {
+            String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            String path = "/images/image";
+            String query = "imageID="+image.getImageID();
+
+            String fullUrl = UriComponentsBuilder.fromHttpUrl(baseUri)
+                    .path(path)
+                    .query(query)
+                    .toUriString();
+            String thumbPath="/images/thumb";
+            String thumbQuery = "imageID="+image.getImageID();
+            String thumbFullUrl = UriComponentsBuilder.fromHttpUrl(baseUri)
+                    .path(thumbPath)
+                    .query(thumbQuery)
+                    .toUriString();
+
+            image.setImageURL(fullUrl);
+            image.setThumbURL(thumbFullUrl);
+        }
+
         res.setData(ic);
         res.setCode(Constants.STATUS_OK);
         res.setMessage(Constants.MESSAGE_OK);
@@ -98,6 +122,16 @@ public class IcController {
     public ResultResponse getImageDetails(@RequestParam Integer imageID){
         ResultResponse res=new ResultResponse();
         Image image = icService.getImageDetails(imageID);
+        //获取图片URL
+        String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        String path = "/images/image";
+        String query = "imageID="+image.getImageID();
+
+        String fullUrl = UriComponentsBuilder.fromHttpUrl(baseUri)
+                .path(path)
+                .query(query)
+                .toUriString();
+        image.setImageURL(fullUrl);
         res.setData(image);
         res.setMessage(Constants.MESSAGE_OK);
         res.setCode(Constants.STATUS_OK);
